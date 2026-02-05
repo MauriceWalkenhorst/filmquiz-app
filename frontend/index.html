@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#e50914">
+    <meta name="description" content="Teste dein Filmwissen mit dem ultimativen Film Quiz!">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>🎬 Film Quiz</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/src/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen active">
+            <div class="loading-animation">
+                <div class="film-reel">🎬</div>
+                <p>Film Quiz wird geladen...</p>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <div class="hero">
+                <div class="logo-container">
+                    <div class="film-icon">🎬</div>
+                    <div class="film-strip"></div>
+                </div>
+                <h1>Film Quiz</h1>
+                <p class="tagline">Wie gut kennst du deine Filme?</p>
+            </div>
+
+            <div class="player-section">
+                <label for="player-name">Dein Name:</label>
+                <input type="text" id="player-name" placeholder="Gib deinen Namen ein" maxlength="30">
+            </div>
+            
+            <div class="category-section">
+                <h3>Wähle eine Kategorie</h3>
+                <div class="category-grid" id="category-grid">
+                    <!-- Categories will be loaded dynamically -->
+                </div>
+            </div>
+            
+            <button id="start-btn" class="btn btn-primary btn-large">
+                <span>🎮</span> Spiel Starten
+            </button>
+            
+            <div class="stats-preview">
+                <div class="stat-item">
+                    <span class="stat-value" id="total-questions-count">0</span>
+                    <span class="stat-label">Fragen</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="your-highscore">0</span>
+                    <span class="stat-label">Dein Rekord</span>
+                </div>
+            </div>
+
+            <button id="view-leaderboard-btn" class="btn btn-secondary">
+                🏆 Bestenliste
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <button id="quit-btn" class="btn-icon">✕</button>
+                <div class="game-info">
+                    <div class="timer">
+                        <svg viewBox="0 0 36 36">
+                            <path class="timer-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path id="timer-circle" class="timer-circle" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span id="time">30</span>
+                    </div>
+                    <div class="score-display">
+                        <span>⭐</span>
+                        <span id="score">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress"></div>
+                </div>
+                <span class="question-counter">
+                    <span id="current-question">1</span> / <span id="total-questions">10</span>
+                </span>
+            </div>
+            
+            <div class="question-card">
+                <div id="question-type" class="question-type"></div>
+                <h2 id="question" class="question-text"></h2>
+                <div id="hint" class="hint"></div>
+            </div>
+            
+            <div id="answers" class="answers-container">
+                <!-- Answers will be inserted here -->
+            </div>
+            
+            <div id="feedback" class="feedback"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="screen">
+            <div class="result-hero">
+                <div class="result-animation" id="result-animation">🎉</div>
+                <h2>Spiel beendet!</h2>
+            </div>
+            
+            <div class="final-score-container">
+                <div class="final-score" id="final-score">0</div>
+                <div class="score-label">Punkte</div>
+                <div id="new-record" class="new-record hidden">🏆 Neuer Rekord!</div>
+            </div>
+            
+            <div id="result-message" class="result-message"></div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">✓</span>
+                    <span class="stat-value" id="correct-answers">0</span>
+                    <span class="stat-label">Richtig</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">✕</span>
+                    <span class="stat-value" id="wrong-answers">0</span>
+                    <span class="stat-label">Falsch</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">%</span>
+                    <span class="stat-value" id="accuracy">0%</span>
+                    <span class="stat-label">Genauigkeit</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">⚡</span>
+                    <span class="stat-value" id="avg-time">0s</span>
+                    <span class="stat-label">Ø Zeit</span>
+                </div>
+            </div>
+
+            <div id="rank-display" class="rank-display hidden">
+                <span>🏅 Du bist auf Platz <strong id="player-rank">-</strong>!</span>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="restart-btn" class="btn btn-primary">
+                    <span>🔄</span> Nochmal spielen
+                </button>
+                <button id="home-btn" class="btn btn-secondary">
+                    <span>🏠</span> Zum Menü
+                </button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboard-screen" class="screen">
+            <div class="screen-header">
+                <button id="back-btn" class="btn-icon">←</button>
+                <h2>🏆 Bestenliste</h2>
+            </div>
+
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" data-tab="all">Alle</button>
+                <button class="tab-btn" data-tab="emoji">Emoji</button>
+                <button class="tab-btn" data-tab="quote">Zitate</button>
+                <button class="tab-btn" data-tab="facts">Fakten</button>
+            </div>
+
+            <div class="leaderboard-list" id="leaderboard-list">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/src/js/api.js"></script>
+    <script src="/src/js/game.js"></script>
+    <script src="/src/js/ui.js"></script>
+    <script src="/src/js/app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed'));
+        }
+    </script>
+</body>
+</html>
