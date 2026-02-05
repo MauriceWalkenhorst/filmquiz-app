@@ -1,4 +1,4 @@
-# Film Quiz - Production Dockerfile
+# Film Quiz - Production Dockerfile for Render.com
 FROM node:20-alpine
 
 # Install dependencies for SQLite
@@ -7,15 +7,17 @@ RUN apk add --no-cache python3 make g++
 # Create app directory
 WORKDIR /app
 
-# Copy package files
+# Copy backend package files
 COPY backend/package*.json ./
 
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy application files
-COPY backend/ ./
-COPY frontend/ ../frontend/
+# Copy backend source code
+COPY backend/src ./src
+
+# Copy frontend files
+COPY frontend/ ./frontend/
 
 # Initialize database
 RUN npm run init-db
