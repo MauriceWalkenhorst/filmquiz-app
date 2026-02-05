@@ -1,0 +1,16 @@
+# Render.com Blueprint
+# Diese Datei ermöglicht 1-Click Deployment auf Render.com
+
+services:
+  - type: web
+    name: filmquiz-app
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: cd backend && npm install && npm run init-db
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
+    autoDeploy: true
